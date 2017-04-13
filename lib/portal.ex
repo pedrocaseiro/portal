@@ -4,6 +4,17 @@ defmodule Portal do
   Documentation for Portal.
   """
 
+  def start(_type, _args) do
+    import Supervisor.Spec
+    children = [worker(Portal.Door, [])]
+    opts = [strategy: :simple_one_for_one, name: Portal.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+
+  def shoot(color) do
+    Supervisor.start_child(Portal.Supervisor, [color])
+  end
+
   defstruct [:left, :right]
 
   def transfer(left, right, data) do
@@ -42,8 +53,8 @@ defimpl Inspect, for: Portal do
 
     """
     #Portal<
-      #{String.rjust(left_door, max)} <=> #{right_door}
-      #{String.rjust(left_data, max)} <=> #{right_data}
+    #{String.rjust(left_door, max)} <=> #{right_door}
+    #{String.rjust(left_data, max)} <=> #{right_data}
     >
     """
   end
